@@ -1,41 +1,30 @@
-import React from "react";
-import { getSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import Router from "next/router";
 
-function HomePage({ session }) {
-    
-    const { user } = session;
-    
-    // ! Si fuera por front end, es mejor ejecutarlo desde el back end (getServerSideProps)
-    // const [user, setUser] = useState(null);
-    // useEffect(() => {
-    //     (async () => {
-    //         const session = await getSession();
-    //         setUser(session.user);
-    //         console.log(session);
-    //     })();
-    // }, []);
-    //! Fin
+function HomePage() {
+    const { data: session, status } = useSession();
+
+    if (status === "loading") {
+        return <p>loading...</p>;
+    }
+
+    if (status === "unauthenticated") {
+        Router.push("/login");
+    }
 
     return (
         <div>
-            {JSON.stringify(user)}
-            <h1>{user.name}</h1>
-            <p>{user.email}</p>
-            <img src={user.image} alt="Foto del usuario"></img>
+            {session ? (
+                <div>
+                    <h1>{session.user.name}</h1>
+                    <p>{session.user.email}</p>
+                    <img src={session.user.image}></img>
+                </div>
+            ) : (
+                <p>Skeleton</p>
+            )}
         </div>
     );
 }
-
-export const getServerSideProps = async (context) => {
-    const session = await getSession(context);
-
-    return {
-        props: {
-            title: "My first page",
-            session: session,
-        },
-    };
-};
 
 export default HomePage;
