@@ -1,17 +1,7 @@
-import { useSession } from "next-auth/react";
+import { getSession } from "next-auth/react";
 import Router from "next/router";
 
-function HomePage() {
-    const { data: session, status } = useSession();
-
-    if (status === "loading") {
-        return <p>loading...</p>;
-    }
-
-    if (status === "unauthenticated") {
-        Router.push("/login");
-    }
-
+function HomePage({ session }) {
     return (
         <div>
             {session ? (
@@ -26,5 +16,24 @@ function HomePage() {
         </div>
     );
 }
+
+export const getServerSideProps = async (context) => {
+    const session = await getSession(context);
+
+    if (!session) {
+        return {
+            redirect: {
+                destination: "/login",
+                permanent: false,
+            },
+        };
+    }
+
+    return {
+        props: {
+            session,
+        },
+    };
+};
 
 export default HomePage;
