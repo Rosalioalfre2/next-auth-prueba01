@@ -1,5 +1,4 @@
-import { getSession } from "next-auth/react";
-import Router from "next/router";
+import { getSession, signOut } from "next-auth/react";
 
 function HomePage({ session }) {
     return (
@@ -13,6 +12,10 @@ function HomePage({ session }) {
             ) : (
                 <p>Skeleton</p>
             )}
+
+            <button onClick={()=>signOut()}>
+                Log out
+            </button>
         </div>
     );
 }
